@@ -1,0 +1,68 @@
+<form method="POST" id="import-form">
+    {% csrf_token %}
+    <label for="username">Username</label>
+    <input type="text" name="username" required><br><br>
+    <label for="password">Password</label>
+    <input type="password" name="password" required autocomplete="off"><br><br>
+    <label for="provider">Email Provider</label>
+    <select name="provider">
+        <option value="gmail">Gmail</option>
+        <option value="yandex">Yandex</option>
+        <option value="mailru">Mail.ru</option>
+    </select><br><br>
+    <button type="submit">Import Emails</button>
+</form>
+
+<div id="progress-container" style="display: none; margin-top: 20px;">
+    <p>Importing emails...</p>
+    <div style="width: 100%; background-color: #ddd;">
+        <div id="progress-bar" style="width: 0%; height: 20px; background-color: #4CAF50;"></div>
+    </div>
+</div>
+
+<script>
+    document.getElementById('import-form').onsubmit = function(event) {
+        event.preventDefault();  // Отключаем стандартную отправку формы
+
+        const form = event.target;
+        const formData = new FormData(form);
+
+        // Показываем прогресс-бар и обнуляем его
+        document.getElementById('progress-container').style.display = 'block';
+        const progressBar = document.getElementById('progress-bar');
+        progressBar.style.width = '0%';
+
+        // Отправляем запрос на сервер для старта импорта
+        fetch('/start-import/', {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': formData.get('csrfmiddlewaretoken')
+            },
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                // Начинаем опрашивать сервер для получения прогресса
+                trackProgress();
+            } else {
+                alert('Error starting import: ' + data.error);
+            }
+        });
+    };
+
+    function trackProgress() {
+        fetch('/get-import-progress/')
+        .then(response => response.json())
+        .then(data => {
+            const progressBar = document.getElementById('progress-bar');
+            progressBar.style.width = data.progress + '%';
+
+            if (data.progress < 100) {
+                setTimeout(trackProgress, 500); // Проверяем прогресс каждые 500 мс
+            } else {
+                alert('Emails imported successfully!');
+            }
+        });
+    }
+</script>

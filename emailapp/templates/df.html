@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>Таблица пользователей</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        table, th, td {
+            border: 1px solid black;
+        }
+        th, td {
+            padding: 8px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <h1>Таблица пользователей</h1>
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Subject</th>
+                <th>sender</th>
+                <th>received_date</th>
+                <th>sent_date</th>
+                <th>body</th>
+                <th>Иattachmentsмя</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for row in table_data %}
+            <tr>
+                <td>{{ row.id }}</td>
+                <td>{{ row.subject }}</td>
+                <td>{{ row.sender }}</td>
+                <td>{{ row.received_date }}</td>
+                <td>{{ row.sent_date }}</td>
+                <td>{{ row.body }}</td>
+                <td>{{ row.attachments }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</body>
+</html>
